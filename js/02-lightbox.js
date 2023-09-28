@@ -5,7 +5,7 @@ const galleryList = document.querySelector('.gallery');
 function createGalleryItemMarkup(item) {
   return `
     <li class="gallery__item">
-      <a class="gallery__link" href="${item.original}">
+      <a class="gallery__link" href="${item.original}" data-alt="${item.description}">
         <img
           class="gallery__image"
           src="${item.preview}"
@@ -20,12 +20,24 @@ const galleryItemsMarkup = galleryItems.map(createGalleryItemMarkup).join('');
 
 galleryList.insertAdjacentHTML('beforeend', galleryItemsMarkup);
 
-document.addEventListener('DOMContentLoaded', function () {
-  new SimpleLightbox('.gallery a', {
-    captions: true, 
-    captionDelay: 300, 
-  });
+const lightbox = new SimpleLightbox('.gallery a', {
+  captions: true, 
+  captionDelay: 250, 
+  captionsData: 'alt', 
 });
 
+lightbox.on('show.simplelightbox', () => {
+  document.addEventListener('keydown', handleKeyPress);
+});
+
+lightbox.on('close.simplelightbox', () => {
+  document.removeEventListener('keydown', handleKeyPress);
+});
+
+function handleKeyPress(event) {
+  if (event.key === 'Escape') {
+    lightbox.close();
+  }
+}
 
 console.log(galleryItems);
